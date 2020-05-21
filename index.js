@@ -3,11 +3,11 @@ const port = process.env.PORT || 8000;
 const app = express();
 
 // middleware
-// app.use("view engine", ejs);
-// app.use();
+// express router
+app.use("/", require("./routes"));
 
 app.listen(port, (err) => {
   if (err) return console.log(`Error  : ${err}`);
 
-  console.log(`Server running on port ${port}`);
+  console.log(`Server running on port : ${port}`);
 });
