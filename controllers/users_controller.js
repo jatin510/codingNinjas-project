@@ -11,3 +11,12 @@ module.exports.signUp = (req, res) => {
 module.exports.signIn = (req, res) => {
   return res.render("user_sign_in", { title: "Codial | Sign In" });
 };
+
+// get the signUp data
+module.exports.create = (req, res) => {
+  // TODO later
+};
+
+module.exports.createSession = (req, res) => {
+  // TODO later
+};
