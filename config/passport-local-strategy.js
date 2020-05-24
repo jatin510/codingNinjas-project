@@ -3,29 +3,12 @@ const User = require("../models/user");
 
 const LocalStrategy = require("passport-local").Strategy;
 
-// passport.use(
-//   new LocalStrategy((username, password, done) => {
-//     User.findOne({ username: username }, function (err, user) {
-//       if (err) {
-//         return done(err);
-//       }
-//       if (!user) {
-//         return done(null, false);
-//       }
-//       if (!user.verifyPassword(password)) {
-//         return done(null, false);
-//       }
-//       return done(null, user);
-//     });
-//   })
-// );
-
 passport.use(
   new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
     // find a user and establish the identity
     User.findOne({ email }, (err, user) => {
       if (err) {
-        console.log("eError in finding user --> password");
+        console.log("Error in finding user --> password");
         return done(err);
       }
 
@@ -52,7 +35,7 @@ passport.deserializeUser((id, done) => {
       console.log("error in finding user deserialize");
       return done(null);
     }
-    if (!user || user.password != password) {
+    if (!user) {
       console.log("Invalid Username / password deserialize");
 
       return done(null, false);
@@ -61,3 +44,14 @@ passport.deserializeUser((id, done) => {
     return done(null, user);
   });
 });
+
+// check if user is autheticated
+passport.checkAuthentication = (req, res, next) => {
+  // if the user is signed in, then pass on the request to the next function (controller's action)
+  if (req.isAuthenticated()) {
+    return next();
+  }
+
+  // if the user is not signed in
+  return res.redirect("/users/sign-in");
+};
