@@ -7,6 +7,7 @@ const db = require("./config/mongoose");
 const session = require("express-session");
 const passport = require("passport");
 const passportLocal = require("./config/passport-local-strategy");
+const MongoStore = require("connect-mongo")(session);
 
 app.use(express.urlencoded());
 app.use(cookieParser());
@@ -22,6 +23,7 @@ app.use(express.static("./assets"));
 app.set("view engine", "ejs");
 app.set("views", "./views");
 
+// mongo store is used to store the session
 app.use(
   session({
     name: "codeial",
@@ -32,6 +34,13 @@ app.use(
     cookie: {
       maxAge: 1000 * 60 * 100,
     },
+    store: new MongoStore(
+      {
+        mongooseConnection: db,
+        autoRemove: "disabled",
+      },
+      (err) => console.log(err || "connect-mongo-setup error")
+    ),
   })
 );
 
