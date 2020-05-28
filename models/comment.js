@@ -14,7 +14,7 @@ const commentSchema = mongoose.Schema(
     },
 
     post: {
-      type: moogoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
     },
   },
@@ -23,6 +23,6 @@ const commentSchema = mongoose.Schema(
   }
 );
 
-const Comment = moogoose.model("Comment", commentSchema);
+const Comment = mongoose.model("Comment", commentSchema);
 
 module.exports = Comment;
