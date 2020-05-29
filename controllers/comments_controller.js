@@ -28,3 +28,27 @@ module.exports.create = (req, res) => {
     }
   });
 };
+
+module.exports.destroy = (req, res) => {
+  Comment.findById(req.params.id, (err, comment) => {
+    if (err) return console.log("error deleting comment", err);
+
+    if (comment.user == req.user.id) {
+      // then remove
+      let postId = comment.post;
+
+      comment.remove();
+
+      Post.findByIdAndUpdate(
+        postId,
+        { $pull: { comments: req.params.id } },
+        (err, post) => {
+          if (err) return console.log("error in post comment :", err);
+          return res.redirect("back");
+        }
+      );
+    } else {
+      return res.redirect("back");
+    }
+  });
+};
