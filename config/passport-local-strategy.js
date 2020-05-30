@@ -4,23 +4,28 @@ const User = require("../models/user");
 const LocalStrategy = require("passport-local").Strategy;
 
 passport.use(
-  new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
-    // find a user and establish the identity
-    User.findOne({ email }, (err, user) => {
-      if (err) {
-        console.log("Error in finding user --> password");
-        return done(err);
-      }
+  new LocalStrategy(
+    {
+      usernameField: "email",
+      passReqToCallback: true,
+    },
+    (req, email, password, done) => {
+      // find a user and establish the identity
+      User.findOne({ email }, (err, user) => {
+        if (err) {
+          req.flash("error", err);
+          return done(err);
+        }
 
-      if (!user || user.password != password) {
-        console.log("Invalid Username / password");
+        if (!user || user.password != password) {
+          req.flash("error", "Invalid username or password");
+          return done(null, false);
+        }
 
-        return done(null, false);
-      }
-
-      return done(null, user);
-    });
-  })
+        return done(null, user);
+      });
+    }
+  )
 );
 
 // serialize the user to decide which key is to kept at browser

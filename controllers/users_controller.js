@@ -32,7 +32,8 @@ module.exports.signUp = (req, res) => {
 // render sing in page
 module.exports.signIn = (req, res) => {
   if (req.isAuthenticated()) {
-    return res.redirect("/users/profile");
+    console.log("authenticated");
+    return res.redirect("/users/profile/" + req.user.id);
   }
   return res.render("user_sign_in", { title: "Codial | Sign In" });
 };
@@ -58,11 +59,13 @@ module.exports.create = (req, res) => {
 };
 
 module.exports.createSession = (req, res) => {
+  req.flash("success", "Logged in Successfully");
   return res.redirect("/");
 };
 
 module.exports.destroySession = (req, res) => {
   req.logout();
+  req.flash("success", "Logged Out");
 
   return res.redirect("/");
 };
