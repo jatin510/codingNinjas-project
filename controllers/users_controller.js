@@ -1,7 +1,23 @@
 const User = require("../models/user");
 
 module.exports.profile = (req, res) => {
-  return res.render("user_profile", { title: "codieal", user: req.user });
+  User.findById(req.params.id, (err, user) => {
+    if (err) return console.log(err);
+    return res.render("user_profile", { title: "codieal", profile_user: user });
+  });
+};
+
+module.exports.update = (req, res) => {
+  console.log("user update called");
+  if (req.user.id == req.params.id) {
+    User.findByIdAndUpdate(req.params.id, req.body, (err, user) => {
+      if (err) return console.log("error,", err);
+
+      return res.redirect("back");
+    });
+  } else {
+    return res.status(401).send("unauthorised");
+  }
 };
 
 // redner sign up page

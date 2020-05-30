@@ -1,12 +1,32 @@
 const Post = require("../models/post");
+const User = require("../models/user");
 
-module.exports.home = function (req, res) {
-  // Post.find({}, (err, posts) => {
-  //   if (err) return console.log("error in home controller");
-  //   console.log(posts);
-  //   return res.render("home", { title: "Codeial | Home", posts });
-  // });
+// async
+module.exports.home = async function (req, res) {
+  // populate the user of each post
+  try {
+    let posts = await Post.find({})
+      .populate("user")
+      .populate({
+        path: "comments",
+        populate: {
+          path: "user",
+        },
+      });
 
+    let users = await User.find({});
+
+    return res.render("home", {
+      title: "Codeial | Home",
+      posts,
+      all_users: users,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+module.exports.nothome = function (req, res) {
   // populate the user of each post
   Post.find({})
     .populate("user")
@@ -17,7 +37,14 @@ module.exports.home = function (req, res) {
       },
     })
     .exec((err, posts) => {
+      User.find({}, (err, users) => {
+        if (err) return console.log("home fetching user error : ", err);
+        return res.render("home", {
+          title: "Codeial | Home",
+          posts,
+          all_users: users,
+        });
+      });
       if (err) return console.log("error in home controller");
-      return res.render("home", { title: "Codeial | Home", posts });
     });
 };
