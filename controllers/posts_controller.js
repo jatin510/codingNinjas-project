@@ -7,6 +7,16 @@ module.exports.create = async (req, res) => {
       content: req.body.content,
       user: req.user._id,
     });
+    console.log("inside create");
+    if (req.xhr) {
+      console.log("hello");
+      return res.status(200).json({
+        data: {
+          post,
+        },
+        message: "Post created !",
+      });
+    }
 
     req.flash("success", "Post created !");
     return res.redirect("back");
