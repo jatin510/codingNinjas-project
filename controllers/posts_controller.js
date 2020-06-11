@@ -3,13 +3,12 @@ const Comment = require("../models/comment");
 
 module.exports.create = async (req, res) => {
   try {
-    await Post.create({
+    let post = await Post.create({
       content: req.body.content,
       user: req.user._id,
     });
-    console.log("inside create");
+    // let post = Post.findById(post1.id);
     if (req.xhr) {
-      console.log("hello");
       return res.status(200).json({
         data: {
           post,
@@ -35,6 +34,15 @@ module.exports.destroy = async (req, res) => {
       post.remove();
 
       await Comment.deleteMany({ post: req.params.id });
+
+      if (req.xhr) {
+        return res.status(200).json({
+          data: {
+            post_id: req.params.id,
+          },
+          message: "Post deleted successfully",
+        });
+      }
       req.flash("success", "Post and comments destroyed !");
 
       return res.redirect("back");

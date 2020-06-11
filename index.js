@@ -11,18 +11,20 @@ const MongoStore = require("connect-mongo")(session);
 const sassMiddleware = require("node-sass-middleware");
 const flash = require("connect-flash");
 const customMware = require("./config/middleware");
+const passportJWT = require("./config/passport-jwt-strategy.js");
 
 app.use(
   sassMiddleware({
     src: "./assets/scss",
     dest: "./assets/css",
-    debug: true,
+    debug: false,
     outputStyle: "extended",
     prefix: "/css",
   })
 );
 app.use(express.urlencoded());
 app.use(cookieParser());
+
 // setting up layouts
 app.use(expressLayouts);
 // extract style and script from sub pages
@@ -30,6 +32,9 @@ app.set("layout extractStyles", true);
 app.set("layout extractScripts", true);
 
 app.use(express.static("./assets"));
+
+// make the upload path available to the browser
+app.use("/uploads", express.static(__dirname + "/uploads"));
 
 //set up view engine
 app.set("view engine", "ejs");
