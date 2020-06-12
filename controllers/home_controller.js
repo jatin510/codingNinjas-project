@@ -3,6 +3,7 @@ const User = require("../models/user");
 
 // async
 module.exports.home = async function (req, res) {
+  req.flash("success", "hello");
   // populate the user of each post
   try {
     let posts = await Post.find({})

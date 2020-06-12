@@ -13,7 +13,6 @@ passport.use(
   new JWTStrategy(opts, (jwtPayload, done) => {
     User.findById(jwtPayload._id, (err, user) => {
       if (err) console.log("Error finding error from JWT");
-
       if (user) {
         return done(null, user);
       } else {
