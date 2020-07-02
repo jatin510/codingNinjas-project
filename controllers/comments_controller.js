@@ -1,30 +1,51 @@
 const Comment = require("../models/comment");
 const Post = require("../models/post");
+const commentsMailer = require("../mailers/comments_mailer");
 
 module.exports.create = (req, res) => {
   console.log(req.body.post);
-  Post.findById(req.body.post, (err, post) => {
-    if (err) return console.log("error in post comment", err);
+  Post.findById(req.body.post, async (err, post) => {
+    try {
+      let post = await Post.findById(req.body.post);
 
-    if (post) {
-      Comment.create(
-        {
+      if (post) {
+        let comment = await Comment.create({
           content: req.body.content,
           post: req.body.post,
           user: req.user._id,
-        },
-        (err, comment) => {
-          // eerr
-          if (err) return console.log("comment error", err);
+        });
 
-          post.comments.push(comment);
-          post.save().then((data) => {
-            console.log("post", data);
+        post.comments.push(comment);
+        post.save();
+
+        comment = await comment.populate("user", "name email").execPopulate();
+        // comment mailercode
+
+        console.log("comemnt called");
+        commentsMailer.newComment(comment);
+        // let job = queue.create("emails", comment).save(function (err) {
+        //   if (err) {
+        //     console.log("Error in sending to the queue", err);
+        //   }
+        //   console.log("job enqueued", job.id);
+        // });
+
+        if (req.xhr) {
+          return res.status(200).json({
+            data: {
+              comment: comment,
+            },
+            message: "Post created!",
           });
-
-          return res.redirect("/");
         }
-      );
+
+        req.flash("success", "Comment published!");
+
+        res.redirect("/");
+      }
+    } catch (err) {
+      req.flash("error", err);
+      return;
     }
   });
 };
